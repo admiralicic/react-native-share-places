@@ -6,8 +6,10 @@
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import PlaceInput from './src/components/PlaceInput/PlaceInput';
+import PlaceList from './src/components/PlaceList/PlaceList';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -18,12 +20,41 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  state = {
+    places: []
+  }
+
+  placeAddedHandler = placeName => {
+
+    this.setState(prevState => {
+      return {
+        places: prevState.places.concat({
+          key: Math.random().toString(), 
+          name: placeName,
+          image: {
+            uri: "https://images.pexels.com/photos/1143705/pexels-photo-1143705.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+          }
+        })
+      }
+    });
+  }
+
+  placeDeletedHandler = key => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.filter(place => {
+          return place.key !== key;
+        })
+      };
+    });
+  }
+
   render() {
+
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <PlaceInput onPlaceAdded={this.placeAddedHandler} />
+        <PlaceList places={this.state.places} onItemDeleted={this.placeDeletedHandler} />
       </View>
     );
   }
@@ -32,18 +63,12 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    padding: 26,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  listContainer: {
+    width: "100%"
+  }
 });
